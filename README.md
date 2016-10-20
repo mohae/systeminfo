@@ -5,7 +5,13 @@ Only basic information about a system is gathered.  For more detailed informatin
 
 Convenience functions are provided for Marshaling and Unmarshaling the data using either `JSON` or `ProtoBuf` serialization.
 
+## Supported output
+* Go struct
+* JSON
+* Protocol Buffers
+* Flatbuffers
+
 ## TODO
-Add disk information.
-Add support for other platforms.
+Add disk information.  
+Add support for other platforms.  
 
