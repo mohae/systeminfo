@@ -1,0 +1,33 @@
+// system.fbs
+namespace flat;
+
+table System {
+	KernelOS:string;
+	KernelVersion:string;
+	KernelArch:string;
+	KernelCompileDate:string;
+	OSName:string;
+	OSID:string;
+	OSIDLike:string;
+	OSVersion:string;
+	MemTotal:ulong;
+	SwapTotal:ulong;
+	NetInfs:[string];
+	Chips:[Chip];
+}
+
+table Chip {
+	PhysicalID:int;
+	VendorID:string;
+	CPUFamily:string;
+	Model:string;
+	ModelName:string;
+	Stepping:string;
+	Microcode:string;
+	CPUMHz:float;
+	CacheSize:string;
+	CPUCores:int;
+	Flags:[string];
+}
+
+root_type System;
