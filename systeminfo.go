@@ -12,19 +12,19 @@ import (
 )
 
 type Error struct {
-	op  string
-	err error
+	Op  string
+	Err error
 }
 
 func (e Error) Error() string {
-	return e.op + ": " + e.err.Error()
+	return e.Op + ": " + e.Err.Error()
 }
 
 func (s *System) Get() error {
 	//Get Kernel info
 	k, err := kernel.Get()
 	if err != nil {
-		return Error{op: "kernel info", err: err}
+		return Error{Op: "kernel info", Err: err}
 	}
 	s.KernelOS = k.OS
 	s.KernelVersion = k.Version
@@ -34,7 +34,7 @@ func (s *System) Get() error {
 	// Get release info
 	o, err := release.Get()
 	if err != nil {
-		return Error{op: "release info", err: err}
+		return Error{Op: "release info", Err: err}
 	}
 	s.OSName = o.Name
 	s.OSID = o.ID
@@ -43,14 +43,14 @@ func (s *System) Get() error {
 	// Get Memory info
 	m, err := mem.Get()
 	if err != nil {
-		return Error{op: "mem info", err: err}
+		return Error{Op: "mem info", Err: err}
 	}
 	s.MemTotal = int64(m.TotalRAM)
 	s.SwapTotal = int64(m.TotalSwap)
 	// Get network interfaces
 	inf, err := info.Get()
 	if err != nil {
-		return Error{op: "netinf info", err: err}
+		return Error{Op: "netinf info", Err: err}
 	}
 	s.NetInfs = make([]string, len(inf.Interfaces))
 	for i := 0; i < len(inf.Interfaces); i++ {
@@ -59,7 +59,7 @@ func (s *System) Get() error {
 	// Get processors
 	p, err := processors.Get()
 	if err != nil {
-		return Error{op: "processor info", err: err}
+		return Error{Op: "processor info", Err: err}
 	}
 	s.Chips = make([]*Chip, len(p.Chips))
 	for i := 0; i < len(p.Chips); i++ {
