@@ -45,8 +45,8 @@ func (s *System) Get() error {
 	if err != nil {
 		return Error{Op: "mem info", Err: err}
 	}
-	s.MemTotal = int64(m.TotalRAM)
-	s.SwapTotal = int64(m.TotalSwap)
+	s.MemTotal = m.TotalRAM
+	s.SwapTotal = m.TotalSwap
 	// Get network interfaces
 	inf, err := info.Get()
 	if err != nil {

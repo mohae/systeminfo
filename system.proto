@@ -12,8 +12,8 @@ message System {
 	string OSID = 7;
 	string OSIDLike = 8;
 	string OSVersion = 9;
-	int64 MemTotal = 10;
-	int64 SwapTotal = 11;
+	uint64 MemTotal = 10;
+	uint64 SwapTotal = 11;
 	repeated string NetInfs = 12;
 	repeated Chip Chips = 13;
 }
