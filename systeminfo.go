@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 
 	"github.com/golang/protobuf/proto"
+	mem "github.com/mohae/joefriday/mem/basic"
 	"github.com/mohae/joefriday/net/info"
 	"github.com/mohae/joefriday/platform/kernel"
 	"github.com/mohae/joefriday/platform/release"
 	"github.com/mohae/joefriday/processors"
-	"github.com/mohae/joefriday/sysinfo/mem"
 )
 
 type Error struct {
@@ -45,8 +45,8 @@ func (s *System) Get() error {
 	if err != nil {
 		return Error{Op: "mem info", Err: err}
 	}
-	s.MemTotal = m.TotalRAM
-	s.SwapTotal = m.TotalSwap
+	s.MemTotal = m.MemTotal
+	s.SwapTotal = m.SwapTotal
 	// Get network interfaces
 	inf, err := info.Get()
 	if err != nil {
