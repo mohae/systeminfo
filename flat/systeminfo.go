@@ -4,10 +4,10 @@ import (
 	"sync"
 
 	fb "github.com/google/flatbuffers/go"
-	mem "github.com/mohae/joefriday/mem/basic"
-	"github.com/mohae/joefriday/net/info"
-	"github.com/mohae/joefriday/platform/kernel"
-	"github.com/mohae/joefriday/platform/release"
+	mem "github.com/mohae/joefriday/mem/membasic"
+	"github.com/mohae/joefriday/net/netdev"
+	"github.com/mohae/joefriday/system/os"
+	"github.com/mohae/joefriday/system/version"
 	"github.com/mohae/joefriday/processors"
 	sysinfo "github.com/mohae/systeminfo"
 )
@@ -30,18 +30,18 @@ func Get() ([]byte, error) {
 // that the builder is ready to use.
 func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	//Get Kernel info
-	k, err := kernel.Get()
+	k, err := version.Get()
 	if err != nil {
-		return nil, sysinfo.Error{Op: "flat kernel info", Err: err}
+		return nil, sysinfo.Error{Op: "flat kernel version info", Err: err}
 	}
-	os := bldr.CreateString(k.OS)
+	osS := bldr.CreateString(k.OS)
 	version := bldr.CreateString(k.Version)
 	arch := bldr.CreateString(k.Arch)
 	compileDate := bldr.CreateString(k.CompileDate)
 	// Get release info
-	o, err := release.Get()
+	o, err := os.Get()
 	if err != nil {
-		return nil, sysinfo.Error{Op: "flat release info", Err: err}
+		return nil, sysinfo.Error{Op: "flat OS release info", Err: err}
 	}
 	oName := bldr.CreateString(o.Name)
 	oID := bldr.CreateString(o.ID)
@@ -55,15 +55,15 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	}
 
 	// Get network interfaces
-	inf, err := info.Get()
+	inf, err := netdev.Get()
 	if err != nil {
-		return nil, sysinfo.Error{Op: "flat netinf info", Err: err}
+		return nil, sysinfo.Error{Op: "flat netdev info", Err: err}
 	}
-	uof := make([]fb.UOffsetT, len(inf.Interfaces))
-	for i, nic := range inf.Interfaces {
+	uof := make([]fb.UOffsetT, len(inf.Device))
+	for i, nic := range inf.Device {
 		uof[i] = bldr.CreateString(nic.Name)
 	}
-	SystemStartNetInfsVector(bldr, len(inf.Interfaces))
+	SystemStartNetInfsVector(bldr, len(inf.Device))
 	for i := len(uof) - 1; i >= 0; i-- {
 		bldr.PrependUOffsetT(uof[i])
 	}
@@ -74,9 +74,9 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 		return nil, sysinfo.Error{Op: "flat processor info", Err: err}
 	}
 
-	uoff := make([]fb.UOffsetT, len(p.Chips))
-	for i, chip := range p.Chips {
-		uoff[i] = serializeChip(bldr, &chip)
+	uoff := make([]fb.UOffsetT, len(p.Socket))
+	for i, processor := range p.Socket {
+		uoff[i] = serializeProcessor(bldr, &processor)
 	}
 	SystemStartChipsVector(bldr, len(uoff))
 	for i := len(uoff) - 1; i >= 0; i-- {
@@ -84,7 +84,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	}
 	chips := bldr.EndVector(len(uoff))
 	SystemStart(bldr)
-	SystemAddKernelOS(bldr, os)
+	SystemAddKernelOS(bldr, osS)
 	SystemAddKernelVersion(bldr, version)
 	SystemAddKernelArch(bldr, arch)
 	SystemAddKernelCompileDate(bldr, compileDate)
@@ -103,7 +103,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	return tmp, nil
 }
 
-func serializeChip(bldr *fb.Builder, c *processors.Chip) fb.UOffsetT {
+func serializeProcessor(bldr *fb.Builder, c *processors.Processor) fb.UOffsetT {
 	vendorID := bldr.CreateString(c.VendorID)
 	cpuFamily := bldr.CreateString(c.CPUFamily)
 	model := bldr.CreateString(c.Model)
