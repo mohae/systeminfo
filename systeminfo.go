@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 
 	"github.com/golang/protobuf/proto"
-	mem "github.com/mohae/joefriday/mem/basic"
-	"github.com/mohae/joefriday/net/info"
-	"github.com/mohae/joefriday/platform/kernel"
-	"github.com/mohae/joefriday/platform/release"
+	"github.com/mohae/joefriday/mem/membasic"
+	"github.com/mohae/joefriday/net/netdev"
+	"github.com/mohae/joefriday/system/version"
+	"github.com/mohae/joefriday/system/os"
 	"github.com/mohae/joefriday/processors"
 )
 
@@ -22,7 +22,7 @@ func (e Error) Error() string {
 
 func (s *System) Get() error {
 	//Get Kernel info
-	k, err := kernel.Get()
+	k, err := version.Get()
 	if err != nil {
 		return Error{Op: "kernel info", Err: err}
 	}
@@ -32,50 +32,50 @@ func (s *System) Get() error {
 	s.KernelType = k.Type
 	s.KernelCompileDate = k.CompileDate
 	// Get release info
-	o, err := release.Get()
+	o, err := os.Get()
 	if err != nil {
-		return Error{Op: "release info", Err: err}
+		return Error{Op: "os release info", Err: err}
 	}
 	s.OSName = o.Name
 	s.OSID = o.ID
 	s.OSIDLike = o.IDLike
 	s.OSVersion = o.Version
 	// Get Memory info
-	m, err := mem.Get()
+	m, err := membasic.Get()
 	if err != nil {
 		return Error{Op: "mem info", Err: err}
 	}
 	s.MemTotal = m.MemTotal
 	s.SwapTotal = m.SwapTotal
-	// Get network interfaces
-	inf, err := info.Get()
+	// Get network devices
+	inf, err := netdev.Get()
 	if err != nil {
-		return Error{Op: "netinf info", Err: err}
+		return Error{Op: "network devices info", Err: err}
 	}
-	s.NetInfs = make([]string, len(inf.Interfaces))
-	for i := 0; i < len(inf.Interfaces); i++ {
-		s.NetInfs[i] = inf.Interfaces[i].Name
+	s.NetInfs = make([]string, len(inf.Device))
+	for i := 0; i < len(inf.Device); i++ {
+		s.NetInfs[i] = inf.Device[i].Name
 	}
 	// Get processors
 	p, err := processors.Get()
 	if err != nil {
 		return Error{Op: "processor info", Err: err}
 	}
-	s.Chips = make([]*Chip, len(p.Chips))
-	for i := 0; i < len(p.Chips); i++ {
+	s.Chips = make([]*Chip, len(p.Socket))
+	for i := 0; i < len(p.Socket); i++ {
 		var chip Chip
-		chip.PhysicalID = int32(p.Chips[i].PhysicalID)
-		chip.VendorID = p.Chips[i].VendorID
-		chip.CPUFamily = p.Chips[i].CPUFamily
-		chip.Model = p.Chips[i].Model
-		chip.ModelName = p.Chips[i].ModelName
-		chip.Stepping = p.Chips[i].Stepping
-		chip.Microcode = p.Chips[i].Microcode
-		chip.CPUMHz = p.Chips[i].CPUMHz
-		chip.CacheSize = p.Chips[i].CacheSize
-		chip.CPUCores = int32(p.Chips[i].CPUCores)
-		chip.Flags = make([]string, len(p.Chips[i].Flags))
-		copy(chip.Flags, p.Chips[i].Flags)
+		chip.PhysicalID = int32(p.Socket[i].PhysicalID)
+		chip.VendorID = p.Socket[i].VendorID
+		chip.CPUFamily = p.Socket[i].CPUFamily
+		chip.Model = p.Socket[i].Model
+		chip.ModelName = p.Socket[i].ModelName
+		chip.Stepping = p.Socket[i].Stepping
+		chip.Microcode = p.Socket[i].Microcode
+		chip.CPUMHz = p.Socket[i].CPUMHz
+		chip.CacheSize = p.Socket[i].CacheSize
+		chip.CPUCores = int32(p.Socket[i].CPUCores)
+		chip.Flags = make([]string, len(p.Socket[i].Flags))
+		copy(chip.Flags, p.Socket[i].Flags)
 		s.Chips[i] = &chip
 	}
 	return nil
