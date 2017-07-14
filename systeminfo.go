@@ -52,31 +52,31 @@ func (s *System) Get() error {
 	if err != nil {
 		return Error{Op: "network devices info", Err: err}
 	}
-	s.NetInfs = make([]string, len(inf.Device))
+	s.NetDev = make([]string, len(inf.Device))
 	for i := 0; i < len(inf.Device); i++ {
-		s.NetInfs[i] = inf.Device[i].Name
+		s.NetDev[i] = inf.Device[i].Name
 	}
 	// Get processors
 	p, err := processors.Get()
 	if err != nil {
 		return Error{Op: "processor info", Err: err}
 	}
-	s.Chips = make([]*Chip, len(p.Socket))
+	s.Socket = make([]*Processor, len(p.Socket))
 	for i := 0; i < len(p.Socket); i++ {
-		var chip Chip
-		chip.PhysicalID = int32(p.Socket[i].PhysicalID)
-		chip.VendorID = p.Socket[i].VendorID
-		chip.CPUFamily = p.Socket[i].CPUFamily
-		chip.Model = p.Socket[i].Model
-		chip.ModelName = p.Socket[i].ModelName
-		chip.Stepping = p.Socket[i].Stepping
-		chip.Microcode = p.Socket[i].Microcode
-		chip.CPUMHz = p.Socket[i].CPUMHz
-		chip.CacheSize = p.Socket[i].CacheSize
-		chip.CPUCores = int32(p.Socket[i].CPUCores)
-		chip.Flags = make([]string, len(p.Socket[i].Flags))
-		copy(chip.Flags, p.Socket[i].Flags)
-		s.Chips[i] = &chip
+		var proc Processor
+		proc.PhysicalID = int32(p.Socket[i].PhysicalID)
+		proc.VendorID = p.Socket[i].VendorID
+		proc.CPUFamily = p.Socket[i].CPUFamily
+		proc.Model = p.Socket[i].Model
+		proc.ModelName = p.Socket[i].ModelName
+		proc.Stepping = p.Socket[i].Stepping
+		proc.Microcode = p.Socket[i].Microcode
+		proc.CPUMHz = p.Socket[i].CPUMHz
+		proc.CacheSize = p.Socket[i].CacheSize
+		proc.CPUCores = int32(p.Socket[i].CPUCores)
+		proc.Flags = make([]string, len(p.Socket[i].Flags))
+		copy(proc.Flags, p.Socket[i].Flags)
+		s.Socket[i] = &proc
 	}
 	return nil
 }

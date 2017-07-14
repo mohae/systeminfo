@@ -10,6 +10,7 @@ import (
 	"github.com/mohae/joefriday/system/version"
 	"github.com/mohae/joefriday/processors"
 	sysinfo "github.com/mohae/systeminfo"
+	"github.com/mohae/systeminfo/flat/structs"
 )
 
 var (
@@ -63,11 +64,11 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	for i, nic := range inf.Device {
 		uof[i] = bldr.CreateString(nic.Name)
 	}
-	SystemStartNetInfsVector(bldr, len(inf.Device))
+	structs.SystemStartNetDevVector(bldr, len(inf.Device))
 	for i := len(uof) - 1; i >= 0; i-- {
 		bldr.PrependUOffsetT(uof[i])
 	}
-	netinfs := bldr.EndVector(len(uof))
+	netdevs := bldr.EndVector(len(uof))
 	// Get processors
 	p, err := processors.Get()
 	if err != nil {
@@ -78,25 +79,25 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	for i, processor := range p.Socket {
 		uoff[i] = serializeProcessor(bldr, &processor)
 	}
-	SystemStartChipsVector(bldr, len(uoff))
+	structs.SystemStartSocketVector(bldr, len(uoff))
 	for i := len(uoff) - 1; i >= 0; i-- {
 		bldr.PrependUOffsetT(uoff[i])
 	}
-	chips := bldr.EndVector(len(uoff))
-	SystemStart(bldr)
-	SystemAddKernelOS(bldr, osS)
-	SystemAddKernelVersion(bldr, version)
-	SystemAddKernelArch(bldr, arch)
-	SystemAddKernelCompileDate(bldr, compileDate)
-	SystemAddOSName(bldr, oName)
-	SystemAddOSID(bldr, oID)
-	SystemAddOSIDLike(bldr, oIDLike)
-	SystemAddOSVersion(bldr, oVersion)
-	SystemAddMemTotal(bldr, m.MemTotal)
-	SystemAddSwapTotal(bldr, m.SwapTotal)
-	SystemAddNetInfs(bldr, netinfs)
-	SystemAddChips(bldr, chips)
-	bldr.Finish(SystemEnd(bldr))
+	procs := bldr.EndVector(len(uoff))
+	structs.SystemStart(bldr)
+	structs.SystemAddKernelOS(bldr, osS)
+	structs.SystemAddKernelVersion(bldr, version)
+	structs.SystemAddKernelArch(bldr, arch)
+	structs.SystemAddKernelCompileDate(bldr, compileDate)
+	structs.SystemAddOSName(bldr, oName)
+	structs.SystemAddOSID(bldr, oID)
+	structs.SystemAddOSIDLike(bldr, oIDLike)
+	structs.SystemAddOSVersion(bldr, oVersion)
+	structs.SystemAddMemTotal(bldr, m.MemTotal)
+	structs.SystemAddSwapTotal(bldr, m.SwapTotal)
+	structs.SystemAddNetDev(bldr, netdevs)
+	structs.SystemAddSocket(bldr, procs)
+	bldr.Finish(structs.SystemEnd(bldr))
 	bs := bldr.Bytes[bldr.Head():]
 	tmp := make([]byte, len(bs))
 	copy(tmp, bs)
@@ -115,24 +116,24 @@ func serializeProcessor(bldr *fb.Builder, c *processors.Processor) fb.UOffsetT {
 	for i, flag := range c.Flags {
 		uoffs[i] = bldr.CreateString(flag)
 	}
-	ChipStartFlagsVector(bldr, len(uoffs))
+	structs.ProcessorStartFlagsVector(bldr, len(uoffs))
 	for i := len(uoffs) - 1; i >= 0; i-- {
 		bldr.PrependUOffsetT(uoffs[i])
 	}
 	flags := bldr.EndVector(len(uoffs))
-	ChipStart(bldr)
-	ChipAddPhysicalID(bldr, int32(c.PhysicalID))
-	ChipAddVendorID(bldr, vendorID)
-	ChipAddCPUFamily(bldr, cpuFamily)
-	ChipAddModel(bldr, model)
-	ChipAddModelName(bldr, modelName)
-	ChipAddStepping(bldr, stepping)
-	ChipAddMicrocode(bldr, microcode)
-	ChipAddCPUMHz(bldr, c.CPUMHz)
-	ChipAddCacheSize(bldr, cacheSize)
-	ChipAddCPUCores(bldr, int32(c.CPUCores))
-	ChipAddFlags(bldr, flags)
-	return ChipEnd(bldr)
+	structs.ProcessorStart(bldr)
+	structs.ProcessorAddPhysicalID(bldr, int32(c.PhysicalID))
+	structs.ProcessorAddVendorID(bldr, vendorID)
+	structs.ProcessorAddCPUFamily(bldr, cpuFamily)
+	structs.ProcessorAddModel(bldr, model)
+	structs.ProcessorAddModelName(bldr, modelName)
+	structs.ProcessorAddStepping(bldr, stepping)
+	structs.ProcessorAddMicrocode(bldr, microcode)
+	structs.ProcessorAddCPUMHz(bldr, c.CPUMHz)
+	structs.ProcessorAddCacheSize(bldr, cacheSize)
+	structs.ProcessorAddCPUCores(bldr, int32(c.CPUCores))
+	structs.ProcessorAddFlags(bldr, flags)
+	return structs.ProcessorEnd(bldr)
 }
 
 // Deserialize deserializes bytes representing a flatbuffer serialized System
@@ -140,9 +141,9 @@ func serializeProcessor(bldr *fb.Builder, c *processors.Processor) fb.UOffsetT {
 // flatbuffers version), use GetRootAsSystem instead.
 func Deserialize(p []byte) *sysinfo.System {
 	var sys sysinfo.System
-	s := GetRootAsSystem(p, 0)
-	c := &Chip{}
-	chip := &sysinfo.Chip{}
+	s := structs.GetRootAsSystem(p, 0)
+	procF := &structs.Processor{}
+	proc := &sysinfo.Processor{}
 	sys.KernelOS = string(s.KernelOS())
 	sys.KernelVersion = string(s.KernelVersion())
 	sys.KernelArch = string(s.KernelArch())
@@ -153,30 +154,30 @@ func Deserialize(p []byte) *sysinfo.System {
 	sys.OSVersion = string(s.OSVersion())
 	sys.MemTotal = s.MemTotal()
 	sys.SwapTotal = s.SwapTotal()
-	sys.NetInfs = make([]string, s.NetInfsLength())
-	for i := 0; i < len(sys.NetInfs); i++ {
-		sys.NetInfs[i] = string(s.NetInfs(i))
+	sys.NetDev = make([]string, s.NetDevLength())
+	for i := 0; i < len(sys.NetDev); i++ {
+		sys.NetDev[i] = string(s.NetDev(i))
 	}
-	sys.Chips = make([]*sysinfo.Chip, s.ChipsLength())
-	for i := 0; i < len(sys.Chips); i++ {
-		if !s.Chips(c, i) {
+	sys.Socket = make([]*sysinfo.Processor, s.SocketLength())
+	for i := 0; i < len(sys.Socket); i++ {
+		if !s.Socket(procF, i) {
 			continue
 		}
-		chip.PhysicalID = c.PhysicalID()
-		chip.VendorID = string(c.VendorID())
-		chip.CPUFamily = string(c.CPUFamily())
-		chip.Model = string(c.Model())
-		chip.ModelName = string(c.ModelName())
-		chip.Stepping = string(c.Stepping())
-		chip.Microcode = string(c.Microcode())
-		chip.CPUMHz = c.CPUMHz()
-		chip.CacheSize = string(c.CacheSize())
-		chip.CPUCores = c.CPUCores()
-		chip.Flags = make([]string, c.FlagsLength())
-		for j := 0; j < len(chip.Flags); j++ {
-			chip.Flags[j] = string(c.Flags(j))
+		proc.PhysicalID = procF.PhysicalID()
+		proc.VendorID = string(procF.VendorID())
+		proc.CPUFamily = string(procF.CPUFamily())
+		proc.Model = string(procF.Model())
+		proc.ModelName = string(procF.ModelName())
+		proc.Stepping = string(procF.Stepping())
+		proc.Microcode = string(procF.Microcode())
+		proc.CPUMHz = procF.CPUMHz()
+		proc.CacheSize = string(procF.CacheSize())
+		proc.CPUCores = procF.CPUCores()
+		proc.Flags = make([]string, procF.FlagsLength())
+		for j := 0; j < len(proc.Flags); j++ {
+			proc.Flags[j] = string(procF.Flags(j))
 		}
-		sys.Chips[i] = chip
+		sys.Socket[i] = proc
 	}
 	return &sys
 }

@@ -1,5 +1,5 @@
 // system.fbs
-namespace flat;
+namespace structs;
 
 table System {
 	KernelOS:string;
@@ -12,11 +12,11 @@ table System {
 	OSVersion:string;
 	MemTotal:ulong;
 	SwapTotal:ulong;
-	NetInfs:[string];
-	Chips:[Chip];
+	NetDev:[string];
+	Socket:[Processor];
 }
 
-table Chip {
+table Processor {
 	PhysicalID:int;
 	VendorID:string;
 	CPUFamily:string;

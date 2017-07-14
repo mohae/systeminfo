@@ -14,11 +14,11 @@ message System {
 	string OSVersion = 9;
 	uint64 MemTotal = 10;
 	uint64 SwapTotal = 11;
-	repeated string NetInfs = 12;
-	repeated Chip Chips = 13;
+	repeated string NetDev = 12;
+	repeated Processor Socket = 13;
 }
 
-message Chip {
+message Processor {
 	int32 PhysicalID = 1;
 	string VendorID = 2;
 	string CPUFamily = 3;
