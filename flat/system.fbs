@@ -13,6 +13,7 @@ table System {
 	MemTotal:ulong;
 	SwapTotal:ulong;
 	NetDev:[string];
+	Sockets:int;
 	CPU:[CPU];
 }
 

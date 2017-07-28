@@ -55,6 +55,9 @@ func TestGet(t *testing.T) {
 			}
 		}
 	}
+	if s.Sockets != u.Sockets {
+		t.Errorf("Sockets: got %d; want %d", u.Sockets, s.Sockets)
+	}
 	if len(s.CPU) != len(u.CPU) {
 		t.Errorf("Len CPU: got %d, want %d", len(u.CPU), len(s.CPU))
 	} else {

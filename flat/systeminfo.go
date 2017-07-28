@@ -96,6 +96,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	structs.SystemAddMemTotal(bldr, m.MemTotal)
 	structs.SystemAddSwapTotal(bldr, m.SwapTotal)
 	structs.SystemAddNetDev(bldr, netdevs)
+	structs.SystemAddSockets(bldr, int32(p.Sockets))
 	structs.SystemAddCPU(bldr, cpus)
 	bldr.Finish(structs.SystemEnd(bldr))
 	bs := bldr.Bytes[bldr.Head():]
@@ -173,6 +174,7 @@ func Deserialize(p []byte) *sysinfo.System {
 	for i := 0; i < len(sys.NetDev); i++ {
 		sys.NetDev[i] = string(s.NetDev(i))
 	}
+	sys.Sockets = s.Sockets()
 	sys.CPU = make([]*sysinfo.CPU, s.CPULength())
 	for i := 0; i < len(sys.CPU); i++ {
 		if !s.CPU(cpuF, i) {

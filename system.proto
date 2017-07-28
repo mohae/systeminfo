@@ -15,7 +15,8 @@ message System {
 	uint64 MemTotal = 10;
 	uint64 SwapTotal = 11;
 	repeated string NetDev = 12;
-	repeated CPU CPU = 13;
+	int32 Sockets = 13;
+	repeated CPU CPU = 14;
 }
 
 message CPU {

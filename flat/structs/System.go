@@ -118,8 +118,16 @@ func (rcv *System) NetDevLength() int {
 	return 0
 }
 
-func (rcv *System) CPU(obj *CPU, j int) bool {
+func (rcv *System) Sockets() int32 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
+	if o != 0 {
+		return rcv._tab.GetInt32(o + rcv._tab.Pos)
+	}
+	return 0
+}
+
+func (rcv *System) CPU(obj *CPU, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(28))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 4
@@ -134,14 +142,14 @@ func (rcv *System) CPU(obj *CPU, j int) bool {
 }
 
 func (rcv *System) CPULength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(28))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
 	return 0
 }
 
-func SystemStart(builder *flatbuffers.Builder) { builder.StartObject(12) }
+func SystemStart(builder *flatbuffers.Builder) { builder.StartObject(13) }
 func SystemAddKernelOS(builder *flatbuffers.Builder, KernelOS flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(KernelOS), 0) }
 func SystemAddKernelVersion(builder *flatbuffers.Builder, KernelVersion flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(KernelVersion), 0) }
 func SystemAddKernelArch(builder *flatbuffers.Builder, KernelArch flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(KernelArch), 0) }
@@ -155,7 +163,8 @@ func SystemAddSwapTotal(builder *flatbuffers.Builder, SwapTotal uint64) { builde
 func SystemAddNetDev(builder *flatbuffers.Builder, NetDev flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(10, flatbuffers.UOffsetT(NetDev), 0) }
 func SystemStartNetDevVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT { return builder.StartVector(4, numElems, 4)
 }
-func SystemAddCPU(builder *flatbuffers.Builder, CPU flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(11, flatbuffers.UOffsetT(CPU), 0) }
+func SystemAddSockets(builder *flatbuffers.Builder, Sockets int32) { builder.PrependInt32Slot(11, Sockets, 0) }
+func SystemAddCPU(builder *flatbuffers.Builder, CPU flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(12, flatbuffers.UOffsetT(CPU), 0) }
 func SystemStartCPUVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT { return builder.StartVector(4, numElems, 4)
 }
 func SystemEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT { return builder.EndObject() }

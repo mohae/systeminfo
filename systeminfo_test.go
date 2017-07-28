@@ -44,6 +44,9 @@ func TestSystemInfoGet(t *testing.T) {
 	if len(s.NetDev) == 0 {
 		t.Error("Len NetInfs was 0, expected something")
 	}
+	if s.Sockets <= 0 {
+		t.Errorf("expected at least 1 socket; got %d", s.Sockets)
+	}
 	if len(s.CPU) == 0 {
 		t.Error("Len Socket was 0, expected something")
 	} else {
