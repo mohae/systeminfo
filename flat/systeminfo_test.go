@@ -59,6 +59,15 @@ func TestGet(t *testing.T) {
 		t.Errorf("Len CPU: got %d, want %d", len(u.CPU), len(s.CPU))
 	} else {
 		for i, v := range s.CPU {
+			if v.PhysicalID != u.CPU[i].PhysicalID {
+				t.Errorf("CPU[%d].PhysicalID: got %s, want %s", i, v.PhysicalID, u.CPU[i].PhysicalID)
+			}
+			if v.CoreID != u.CPU[i].CoreID {
+				t.Errorf("CPU[%d].CoreID: got %s, want %s", i, v.CoreID, u.CPU[i].CoreID)
+			}
+			if v.Siblings != u.CPU[i].Siblings {
+				t.Errorf("CPU[%d].Siblings: got %s, want %s", i, v.Siblings, u.CPU[i].Siblings)
+			}
 			if v.VendorID != u.CPU[i].VendorID {
 				t.Errorf("CPU[%d].VendorID: got %s, want %s", i, v.VendorID, u.CPU[i].VendorID)
 			}
@@ -92,7 +101,9 @@ func TestGet(t *testing.T) {
 			if len(v.Flags) != len(u.CPU[i].Flags) {
 				t.Errorf("len CPU[%d].Flags: got %d, want %d", i, len(v.Flags), len(u.CPU[i].Flags))
 			}
-
+			if len(v.Bugs) != len(u.CPU[i].Bugs) {
+				t.Errorf("len CPU[%d].Bugs: got %d, want %d", i, len(v.Bugs), len(u.CPU[i].Bugs))
+			}
 		}
 	}
 }

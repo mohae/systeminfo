@@ -18,6 +18,8 @@ table System {
 
 table CPU {
 	PhysicalID:int;
+	CoreID:int;
+	Siblings:int;
 	VendorID:string;
 	CPUFamily:string;
 	Model:string;
@@ -29,6 +31,7 @@ table CPU {
 	CacheSize:string;
 	CPUCores:int;
 	Flags:[string];
+	Bugs:[string];
 }
 
 root_type System;

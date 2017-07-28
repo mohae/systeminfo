@@ -83,7 +83,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	for i := len(uoff) - 1; i >= 0; i-- {
 		bldr.PrependUOffsetT(uoff[i])
 	}
-	procs := bldr.EndVector(len(uoff))
+	cpus := bldr.EndVector(len(uoff))
 	structs.SystemStart(bldr)
 	structs.SystemAddKernelOS(bldr, osS)
 	structs.SystemAddKernelVersion(bldr, version)
@@ -96,7 +96,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	structs.SystemAddMemTotal(bldr, m.MemTotal)
 	structs.SystemAddSwapTotal(bldr, m.SwapTotal)
 	structs.SystemAddNetDev(bldr, netdevs)
-	structs.SystemAddCPU(bldr, procs)
+	structs.SystemAddCPU(bldr, cpus)
 	bldr.Finish(structs.SystemEnd(bldr))
 	bs := bldr.Bytes[bldr.Head():]
 	tmp := make([]byte, len(bs))
@@ -112,6 +112,7 @@ func serializeCPU(bldr *fb.Builder, c *cpuinfo.CPU) fb.UOffsetT {
 	stepping := bldr.CreateString(c.Stepping)
 	microcode := bldr.CreateString(c.Microcode)
 	cacheSize := bldr.CreateString(c.CacheSize)
+	// flags
 	uoffs := make([]fb.UOffsetT, len(c.Flags))
 	for i, flag := range c.Flags {
 		uoffs[i] = bldr.CreateString(flag)
@@ -121,8 +122,20 @@ func serializeCPU(bldr *fb.Builder, c *cpuinfo.CPU) fb.UOffsetT {
 		bldr.PrependUOffsetT(uoffs[i])
 	}
 	flags := bldr.EndVector(len(uoffs))
+	// bugs
+	uoffs = make([]fb.UOffsetT, len(c.Bugs))
+	for i, bug := range c.Bugs {
+		uoffs[i] = bldr.CreateString(bug)
+	}
+	structs.CPUStartBugsVector(bldr, len(uoffs))
+	for i := len(uoffs) - 1; i >= 0; i-- {
+		bldr.PrependUOffsetT(uoffs[i])
+	}
+	bugs := bldr.EndVector(len(uoffs))
 	structs.CPUStart(bldr)
 	structs.CPUAddPhysicalID(bldr, int32(c.PhysicalID))
+	structs.CPUAddCoreID(bldr, int32(c.CoreID))
+	structs.CPUAddSiblings(bldr, int32(c.Siblings))
 	structs.CPUAddVendorID(bldr, vendorID)
 	structs.CPUAddCPUFamily(bldr, cpuFamily)
 	structs.CPUAddModel(bldr, model)
@@ -134,6 +147,7 @@ func serializeCPU(bldr *fb.Builder, c *cpuinfo.CPU) fb.UOffsetT {
 	structs.CPUAddCacheSize(bldr, cacheSize)
 	structs.CPUAddCPUCores(bldr, int32(c.CPUCores))
 	structs.CPUAddFlags(bldr, flags)
+	structs.CPUAddBugs(bldr, bugs)
 	return structs.CPUEnd(bldr)
 }
 
@@ -165,6 +179,8 @@ func Deserialize(p []byte) *sysinfo.System {
 			continue
 		}
 		cpu.PhysicalID = cpuF.PhysicalID()
+		cpu.CoreID = cpuF.CoreID()
+		cpu.Siblings = cpuF.Siblings()
 		cpu.VendorID = string(cpuF.VendorID())
 		cpu.CPUFamily = string(cpuF.CPUFamily())
 		cpu.Model = string(cpuF.Model())
@@ -178,6 +194,10 @@ func Deserialize(p []byte) *sysinfo.System {
 		cpu.Flags = make([]string, cpuF.FlagsLength())
 		for j := 0; j < len(cpu.Flags); j++ {
 			cpu.Flags[j] = string(cpuF.Flags(j))
+		}
+		cpu.Bugs = make([]string, cpuF.BugsLength())
+		for j := 0; j < len(cpu.Bugs); j++ {
+			cpu.Bugs[j] = string(cpuF.Bugs(j))
 		}
 		sys.CPU[i] = cpu
 	}

@@ -106,6 +106,9 @@ func (s *System) cpus() error {
 	s.CPU = make([]*CPU, len(cs.CPU))
 	for i := 0; i < len(cs.CPU); i++ {
 		var cpu CPU
+		cpu.PhysicalID = int32(cs.CPU[i].PhysicalID)
+		cpu.CoreID = int32(cs.CPU[i].CoreID)
+		cpu.Siblings = int32(cs.CPU[i].Siblings)
 		cpu.VendorID = cs.CPU[i].VendorID
 		cpu.CPUFamily = cs.CPU[i].CPUFamily
 		cpu.Model = cs.CPU[i].Model
@@ -118,6 +121,8 @@ func (s *System) cpus() error {
 		cpu.CPUCores = int32(cs.CPU[i].CPUCores)
 		cpu.Flags = make([]string, len(cs.CPU[i].Flags))
 		copy(cpu.Flags, cs.CPU[i].Flags)
+		cpu.Bugs = make([]string, len(cs.CPU[i].Bugs))
+		copy(cpu.Bugs, cs.CPU[i].Bugs)
 		s.CPU[i] = &cpu
 	}
 	return nil

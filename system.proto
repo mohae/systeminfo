@@ -20,15 +20,18 @@ message System {
 
 message CPU {
 	int32 PhysicalID = 1;
-	string VendorID = 2;
-	string CPUFamily = 3;
-	string Model = 4;
-	string ModelName = 5;
-	string Stepping = 6;
-	string Microcode = 7;
-	float CPUMHz = 8;
-	float BogoMIPS = 9;
-	string CacheSize = 10;
-	int32 CPUCores = 11;
-	repeated string Flags = 12;
+	int32 CoreID = 2;
+	int32 Siblings = 3;
+	string VendorID = 4;
+	string CPUFamily = 5;
+	string Model = 6;
+	string ModelName = 7;
+	string Stepping = 8;
+	string Microcode = 9;
+	float CPUMHz = 10;
+	float BogoMIPS = 11;
+	string CacheSize = 12;
+	int32 CPUCores = 13;
+	repeated string Flags = 14;
+	repeated string Bugs = 15;
 }
