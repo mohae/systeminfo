@@ -80,6 +80,9 @@ func TestGet(t *testing.T) {
 			if v.CPUMHz != u.Socket[i].CPUMHz {
 				t.Errorf("Socket[%d].CPUMHz: got %g, want %g", i, v.CPUMHz, u.Socket[i].CPUMHz)
 			}
+			if v.BogoMIPS != u.Socket[i].BogoMIPS {
+				t.Errorf("Socket[%d].BogoMIPS: got %g, want %g", i, v.BogoMIPS, u.Socket[i].BogoMIPS)
+			}
 			if v.CacheSize != u.Socket[i].CacheSize {
 				t.Errorf("Socket[%d].CacheSize: got %s, want %s", i, v.CacheSize, u.Socket[i].CacheSize)
 			}

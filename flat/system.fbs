@@ -25,6 +25,7 @@ table Processor {
 	Stepping:string;
 	Microcode:string;
 	CPUMHz:float;
+	BogoMIPS:float;
 	CacheSize:string;
 	CPUCores:int;
 	Flags:[string];

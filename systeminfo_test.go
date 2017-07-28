@@ -191,6 +191,9 @@ func Compare(name string, s, u System, t *testing.T) {
 			if v.CPUMHz != u.Socket[i].CPUMHz {
 				t.Errorf("%s: Socket[%d].CPUMHz: got %g, want %g", name, i, v.CPUMHz, u.Socket[i].CPUMHz)
 			}
+			if v.BogoMIPS != u.Socket[i].BogoMIPS {
+				t.Errorf("%s: Socket[%d].BogoMIPS: got %g, want %g", name, i, v.BogoMIPS, u.Socket[i].BogoMIPS)
+			}
 			if v.CacheSize != u.Socket[i].CacheSize {
 				t.Errorf("%s: Socket[%d].CacheSize: got %s, want %s", name, i, v.CacheSize, u.Socket[i].CacheSize)
 			}

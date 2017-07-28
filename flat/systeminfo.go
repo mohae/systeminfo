@@ -6,9 +6,9 @@ import (
 	fb "github.com/google/flatbuffers/go"
 	mem "github.com/mohae/joefriday/mem/membasic"
 	"github.com/mohae/joefriday/net/netdev"
+	"github.com/mohae/joefriday/processors"
 	"github.com/mohae/joefriday/system/os"
 	"github.com/mohae/joefriday/system/version"
-	"github.com/mohae/joefriday/processors"
 	sysinfo "github.com/mohae/systeminfo"
 	"github.com/mohae/systeminfo/flat/structs"
 )
@@ -130,6 +130,7 @@ func serializeProcessor(bldr *fb.Builder, c *processors.Processor) fb.UOffsetT {
 	structs.ProcessorAddStepping(bldr, stepping)
 	structs.ProcessorAddMicrocode(bldr, microcode)
 	structs.ProcessorAddCPUMHz(bldr, c.CPUMHz)
+	structs.ProcessorAddBogoMIPS(bldr, c.BogoMIPS)
 	structs.ProcessorAddCacheSize(bldr, cacheSize)
 	structs.ProcessorAddCPUCores(bldr, int32(c.CPUCores))
 	structs.ProcessorAddFlags(bldr, flags)
@@ -171,6 +172,7 @@ func Deserialize(p []byte) *sysinfo.System {
 		proc.Stepping = string(procF.Stepping())
 		proc.Microcode = string(procF.Microcode())
 		proc.CPUMHz = procF.CPUMHz()
+		proc.BogoMIPS = procF.BogoMIPS()
 		proc.CacheSize = string(procF.CacheSize())
 		proc.CPUCores = procF.CPUCores()
 		proc.Flags = make([]string, procF.FlagsLength())

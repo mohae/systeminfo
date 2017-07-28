@@ -6,9 +6,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/mohae/joefriday/mem/membasic"
 	"github.com/mohae/joefriday/net/netdev"
-	"github.com/mohae/joefriday/system/version"
-	"github.com/mohae/joefriday/system/os"
 	"github.com/mohae/joefriday/processors"
+	"github.com/mohae/joefriday/system/os"
+	"github.com/mohae/joefriday/system/version"
 )
 
 type Error struct {
@@ -72,6 +72,7 @@ func (s *System) Get() error {
 		proc.Stepping = p.Socket[i].Stepping
 		proc.Microcode = p.Socket[i].Microcode
 		proc.CPUMHz = p.Socket[i].CPUMHz
+		proc.BogoMIPS = p.Socket[i].BogoMIPS
 		proc.CacheSize = p.Socket[i].CacheSize
 		proc.CPUCores = int32(p.Socket[i].CPUCores)
 		proc.Flags = make([]string, len(p.Socket[i].Flags))

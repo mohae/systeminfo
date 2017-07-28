@@ -27,7 +27,8 @@ message Processor {
 	string Stepping = 6;
 	string Microcode = 7;
 	float CPUMHz = 8;
-	string CacheSize = 9;
-	int32 CPUCores = 10;
-	repeated string Flags = 11;
+	float BogoMIPS = 9;
+	string CacheSize = 10;
+	int32 CPUCores = 11;
+	repeated string Flags = 12;
 }
