@@ -13,10 +13,10 @@ table System {
 	MemTotal:ulong;
 	SwapTotal:ulong;
 	NetDev:[string];
-	Socket:[Processor];
+	CPU:[CPU];
 }
 
-table Processor {
+table CPU {
 	PhysicalID:int;
 	VendorID:string;
 	CPUFamily:string;

@@ -15,10 +15,10 @@ message System {
 	uint64 MemTotal = 10;
 	uint64 SwapTotal = 11;
 	repeated string NetDev = 12;
-	repeated Processor Socket = 13;
+	repeated CPU CPU = 13;
 }
 
-message Processor {
+message CPU {
 	int32 PhysicalID = 1;
 	string VendorID = 2;
 	string CPUFamily = 3;

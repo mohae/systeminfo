@@ -55,42 +55,42 @@ func TestGet(t *testing.T) {
 			}
 		}
 	}
-	if len(s.Socket) != len(u.Socket) {
-		t.Errorf("Len Socket: got %d, want %d", len(u.Socket), len(s.Socket))
+	if len(s.CPU) != len(u.CPU) {
+		t.Errorf("Len CPU: got %d, want %d", len(u.CPU), len(s.CPU))
 	} else {
-		for i, v := range s.Socket {
-			if v.VendorID != u.Socket[i].VendorID {
-				t.Errorf("Socket[%d].VendorID: got %s, want %s", i, v.VendorID, u.Socket[i].VendorID)
+		for i, v := range s.CPU {
+			if v.VendorID != u.CPU[i].VendorID {
+				t.Errorf("CPU[%d].VendorID: got %s, want %s", i, v.VendorID, u.CPU[i].VendorID)
 			}
-			if v.CPUFamily != u.Socket[i].CPUFamily {
-				t.Errorf("Socket[%d].CPUFamily: got %s, want %s", i, v.CPUFamily, u.Socket[i].CPUFamily)
+			if v.CPUFamily != u.CPU[i].CPUFamily {
+				t.Errorf("CPU[%d].CPUFamily: got %s, want %s", i, v.CPUFamily, u.CPU[i].CPUFamily)
 			}
-			if v.Model != u.Socket[i].Model {
-				t.Errorf("Socket[%d].Model: got %s, want %s", i, v.Model, u.Socket[i].Model)
+			if v.Model != u.CPU[i].Model {
+				t.Errorf("CPU[%d].Model: got %s, want %s", i, v.Model, u.CPU[i].Model)
 			}
-			if v.ModelName != u.Socket[i].ModelName {
-				t.Errorf("Socket[%d].ModelName: got %s, want %s", i, v.ModelName, u.Socket[i].ModelName)
+			if v.ModelName != u.CPU[i].ModelName {
+				t.Errorf("CPU[%d].ModelName: got %s, want %s", i, v.ModelName, u.CPU[i].ModelName)
 			}
-			if v.Stepping != u.Socket[i].Stepping {
-				t.Errorf("Socket[%d].Stepping: got %s, want %s", i, v.Stepping, u.Socket[i].Stepping)
+			if v.Stepping != u.CPU[i].Stepping {
+				t.Errorf("CPU[%d].Stepping: got %s, want %s", i, v.Stepping, u.CPU[i].Stepping)
 			}
-			if v.Microcode != u.Socket[i].Microcode {
-				t.Errorf("Socket[%d].Microcode: got %s, want %s", i, v.Microcode, u.Socket[i].Microcode)
+			if v.Microcode != u.CPU[i].Microcode {
+				t.Errorf("CPU[%d].Microcode: got %s, want %s", i, v.Microcode, u.CPU[i].Microcode)
 			}
-			if v.CPUMHz != u.Socket[i].CPUMHz {
-				t.Errorf("Socket[%d].CPUMHz: got %g, want %g", i, v.CPUMHz, u.Socket[i].CPUMHz)
+			if v.CPUMHz != u.CPU[i].CPUMHz {
+				t.Errorf("CPU[%d].CPUMHz: got %g, want %g", i, v.CPUMHz, u.CPU[i].CPUMHz)
 			}
-			if v.BogoMIPS != u.Socket[i].BogoMIPS {
-				t.Errorf("Socket[%d].BogoMIPS: got %g, want %g", i, v.BogoMIPS, u.Socket[i].BogoMIPS)
+			if v.BogoMIPS != u.CPU[i].BogoMIPS {
+				t.Errorf("CPU[%d].BogoMIPS: got %g, want %g", i, v.BogoMIPS, u.CPU[i].BogoMIPS)
 			}
-			if v.CacheSize != u.Socket[i].CacheSize {
-				t.Errorf("Socket[%d].CacheSize: got %s, want %s", i, v.CacheSize, u.Socket[i].CacheSize)
+			if v.CacheSize != u.CPU[i].CacheSize {
+				t.Errorf("CPU[%d].CacheSize: got %s, want %s", i, v.CacheSize, u.CPU[i].CacheSize)
 			}
-			if v.CPUCores != u.Socket[i].CPUCores {
-				t.Errorf("Socket[%d].CPUCores: got %d, want %d", i, v.CPUCores, u.Socket[i].CPUCores)
+			if v.CPUCores != u.CPU[i].CPUCores {
+				t.Errorf("CPU[%d].CPUCores: got %d, want %d", i, v.CPUCores, u.CPU[i].CPUCores)
 			}
-			if len(v.Flags) != len(u.Socket[i].Flags) {
-				t.Errorf("len Socket[%d].Flags: got %d, want %d", i, len(v.Flags), len(u.Socket[i].Flags))
+			if len(v.Flags) != len(u.CPU[i].Flags) {
+				t.Errorf("len CPU[%d].Flags: got %d, want %d", i, len(v.Flags), len(u.CPU[i].Flags))
 			}
 
 		}

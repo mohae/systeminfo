@@ -4,9 +4,9 @@ import (
 	"sync"
 
 	fb "github.com/google/flatbuffers/go"
+	"github.com/mohae/joefriday/cpu/cpuinfo"
 	mem "github.com/mohae/joefriday/mem/membasic"
 	"github.com/mohae/joefriday/net/netdev"
-	"github.com/mohae/joefriday/processors"
 	"github.com/mohae/joefriday/system/os"
 	"github.com/mohae/joefriday/system/version"
 	sysinfo "github.com/mohae/systeminfo"
@@ -70,16 +70,16 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	}
 	netdevs := bldr.EndVector(len(uof))
 	// Get processors
-	p, err := processors.Get()
+	p, err := cpuinfo.Get()
 	if err != nil {
 		return nil, sysinfo.Error{Op: "flat processor info", Err: err}
 	}
 
-	uoff := make([]fb.UOffsetT, len(p.Socket))
-	for i, processor := range p.Socket {
-		uoff[i] = serializeProcessor(bldr, &processor)
+	uoff := make([]fb.UOffsetT, len(p.CPU))
+	for i, cpu := range p.CPU {
+		uoff[i] = serializeCPU(bldr, &cpu)
 	}
-	structs.SystemStartSocketVector(bldr, len(uoff))
+	structs.SystemStartCPUVector(bldr, len(uoff))
 	for i := len(uoff) - 1; i >= 0; i-- {
 		bldr.PrependUOffsetT(uoff[i])
 	}
@@ -96,7 +96,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	structs.SystemAddMemTotal(bldr, m.MemTotal)
 	structs.SystemAddSwapTotal(bldr, m.SwapTotal)
 	structs.SystemAddNetDev(bldr, netdevs)
-	structs.SystemAddSocket(bldr, procs)
+	structs.SystemAddCPU(bldr, procs)
 	bldr.Finish(structs.SystemEnd(bldr))
 	bs := bldr.Bytes[bldr.Head():]
 	tmp := make([]byte, len(bs))
@@ -104,7 +104,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	return tmp, nil
 }
 
-func serializeProcessor(bldr *fb.Builder, c *processors.Processor) fb.UOffsetT {
+func serializeCPU(bldr *fb.Builder, c *cpuinfo.CPU) fb.UOffsetT {
 	vendorID := bldr.CreateString(c.VendorID)
 	cpuFamily := bldr.CreateString(c.CPUFamily)
 	model := bldr.CreateString(c.Model)
@@ -116,25 +116,25 @@ func serializeProcessor(bldr *fb.Builder, c *processors.Processor) fb.UOffsetT {
 	for i, flag := range c.Flags {
 		uoffs[i] = bldr.CreateString(flag)
 	}
-	structs.ProcessorStartFlagsVector(bldr, len(uoffs))
+	structs.CPUStartFlagsVector(bldr, len(uoffs))
 	for i := len(uoffs) - 1; i >= 0; i-- {
 		bldr.PrependUOffsetT(uoffs[i])
 	}
 	flags := bldr.EndVector(len(uoffs))
-	structs.ProcessorStart(bldr)
-	structs.ProcessorAddPhysicalID(bldr, int32(c.PhysicalID))
-	structs.ProcessorAddVendorID(bldr, vendorID)
-	structs.ProcessorAddCPUFamily(bldr, cpuFamily)
-	structs.ProcessorAddModel(bldr, model)
-	structs.ProcessorAddModelName(bldr, modelName)
-	structs.ProcessorAddStepping(bldr, stepping)
-	structs.ProcessorAddMicrocode(bldr, microcode)
-	structs.ProcessorAddCPUMHz(bldr, c.CPUMHz)
-	structs.ProcessorAddBogoMIPS(bldr, c.BogoMIPS)
-	structs.ProcessorAddCacheSize(bldr, cacheSize)
-	structs.ProcessorAddCPUCores(bldr, int32(c.CPUCores))
-	structs.ProcessorAddFlags(bldr, flags)
-	return structs.ProcessorEnd(bldr)
+	structs.CPUStart(bldr)
+	structs.CPUAddPhysicalID(bldr, int32(c.PhysicalID))
+	structs.CPUAddVendorID(bldr, vendorID)
+	structs.CPUAddCPUFamily(bldr, cpuFamily)
+	structs.CPUAddModel(bldr, model)
+	structs.CPUAddModelName(bldr, modelName)
+	structs.CPUAddStepping(bldr, stepping)
+	structs.CPUAddMicrocode(bldr, microcode)
+	structs.CPUAddCPUMHz(bldr, c.CPUMHz)
+	structs.CPUAddBogoMIPS(bldr, c.BogoMIPS)
+	structs.CPUAddCacheSize(bldr, cacheSize)
+	structs.CPUAddCPUCores(bldr, int32(c.CPUCores))
+	structs.CPUAddFlags(bldr, flags)
+	return structs.CPUEnd(bldr)
 }
 
 // Deserialize deserializes bytes representing a flatbuffer serialized System
@@ -143,8 +143,8 @@ func serializeProcessor(bldr *fb.Builder, c *processors.Processor) fb.UOffsetT {
 func Deserialize(p []byte) *sysinfo.System {
 	var sys sysinfo.System
 	s := structs.GetRootAsSystem(p, 0)
-	procF := &structs.Processor{}
-	proc := &sysinfo.Processor{}
+	cpuF := &structs.CPU{}
+	cpu := &sysinfo.CPU{}
 	sys.KernelOS = string(s.KernelOS())
 	sys.KernelVersion = string(s.KernelVersion())
 	sys.KernelArch = string(s.KernelArch())
@@ -159,27 +159,27 @@ func Deserialize(p []byte) *sysinfo.System {
 	for i := 0; i < len(sys.NetDev); i++ {
 		sys.NetDev[i] = string(s.NetDev(i))
 	}
-	sys.Socket = make([]*sysinfo.Processor, s.SocketLength())
-	for i := 0; i < len(sys.Socket); i++ {
-		if !s.Socket(procF, i) {
+	sys.CPU = make([]*sysinfo.CPU, s.CPULength())
+	for i := 0; i < len(sys.CPU); i++ {
+		if !s.CPU(cpuF, i) {
 			continue
 		}
-		proc.PhysicalID = procF.PhysicalID()
-		proc.VendorID = string(procF.VendorID())
-		proc.CPUFamily = string(procF.CPUFamily())
-		proc.Model = string(procF.Model())
-		proc.ModelName = string(procF.ModelName())
-		proc.Stepping = string(procF.Stepping())
-		proc.Microcode = string(procF.Microcode())
-		proc.CPUMHz = procF.CPUMHz()
-		proc.BogoMIPS = procF.BogoMIPS()
-		proc.CacheSize = string(procF.CacheSize())
-		proc.CPUCores = procF.CPUCores()
-		proc.Flags = make([]string, procF.FlagsLength())
-		for j := 0; j < len(proc.Flags); j++ {
-			proc.Flags[j] = string(procF.Flags(j))
+		cpu.PhysicalID = cpuF.PhysicalID()
+		cpu.VendorID = string(cpuF.VendorID())
+		cpu.CPUFamily = string(cpuF.CPUFamily())
+		cpu.Model = string(cpuF.Model())
+		cpu.ModelName = string(cpuF.ModelName())
+		cpu.Stepping = string(cpuF.Stepping())
+		cpu.Microcode = string(cpuF.Microcode())
+		cpu.CPUMHz = cpuF.CPUMHz()
+		cpu.BogoMIPS = cpuF.BogoMIPS()
+		cpu.CacheSize = string(cpuF.CacheSize())
+		cpu.CPUCores = cpuF.CPUCores()
+		cpu.Flags = make([]string, cpuF.FlagsLength())
+		for j := 0; j < len(cpu.Flags); j++ {
+			cpu.Flags[j] = string(cpuF.Flags(j))
 		}
-		sys.Socket[i] = proc
+		sys.CPU[i] = cpu
 	}
 	return &sys
 }

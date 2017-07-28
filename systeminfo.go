@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/mohae/joefriday/cpu/cpuinfo"
 	"github.com/mohae/joefriday/mem/membasic"
 	"github.com/mohae/joefriday/net/netdev"
-	"github.com/mohae/joefriday/processors"
 	"github.com/mohae/joefriday/system/os"
 	"github.com/mohae/joefriday/system/version"
 )
@@ -39,7 +39,7 @@ func (s *System) Get() error {
 		return err
 	}
 
-	err = s.processors()
+	err = s.cpus()
 	if err != nil {
 		return err
 	}
@@ -97,29 +97,28 @@ func (s *System) netdev() error {
 	return nil
 }
 
-func (s *System) processors() error {
+func (s *System) cpus() error {
 	// Get processors
-	p, err := processors.Get()
+	cs, err := cpuinfo.Get()
 	if err != nil {
-		return Error{Op: "processor info", Err: err}
+		return Error{Op: "cpu info", Err: err}
 	}
-	s.Socket = make([]*Processor, len(p.Socket))
-	for i := 0; i < len(p.Socket); i++ {
-		var proc Processor
-		proc.PhysicalID = int32(p.Socket[i].PhysicalID)
-		proc.VendorID = p.Socket[i].VendorID
-		proc.CPUFamily = p.Socket[i].CPUFamily
-		proc.Model = p.Socket[i].Model
-		proc.ModelName = p.Socket[i].ModelName
-		proc.Stepping = p.Socket[i].Stepping
-		proc.Microcode = p.Socket[i].Microcode
-		proc.CPUMHz = p.Socket[i].CPUMHz
-		proc.BogoMIPS = p.Socket[i].BogoMIPS
-		proc.CacheSize = p.Socket[i].CacheSize
-		proc.CPUCores = int32(p.Socket[i].CPUCores)
-		proc.Flags = make([]string, len(p.Socket[i].Flags))
-		copy(proc.Flags, p.Socket[i].Flags)
-		s.Socket[i] = &proc
+	s.CPU = make([]*CPU, len(cs.CPU))
+	for i := 0; i < len(cs.CPU); i++ {
+		var cpu CPU
+		cpu.VendorID = cs.CPU[i].VendorID
+		cpu.CPUFamily = cs.CPU[i].CPUFamily
+		cpu.Model = cs.CPU[i].Model
+		cpu.ModelName = cs.CPU[i].ModelName
+		cpu.Stepping = cs.CPU[i].Stepping
+		cpu.Microcode = cs.CPU[i].Microcode
+		cpu.CPUMHz = cs.CPU[i].CPUMHz
+		cpu.BogoMIPS = cs.CPU[i].BogoMIPS
+		cpu.CacheSize = cs.CPU[i].CacheSize
+		cpu.CPUCores = int32(cs.CPU[i].CPUCores)
+		cpu.Flags = make([]string, len(cs.CPU[i].Flags))
+		copy(cpu.Flags, cs.CPU[i].Flags)
+		s.CPU[i] = &cpu
 	}
 	return nil
 }

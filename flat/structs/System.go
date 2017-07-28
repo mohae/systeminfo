@@ -118,14 +118,14 @@ func (rcv *System) NetDevLength() int {
 	return 0
 }
 
-func (rcv *System) Socket(obj *Processor, j int) bool {
+func (rcv *System) CPU(obj *CPU, j int) bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 4
 		x = rcv._tab.Indirect(x)
 	if obj == nil {
-		obj = new(Processor)
+		obj = new(CPU)
 	}
 		obj.Init(rcv._tab.Bytes, x)
 		return true
@@ -133,7 +133,7 @@ func (rcv *System) Socket(obj *Processor, j int) bool {
 	return false
 }
 
-func (rcv *System) SocketLength() int {
+func (rcv *System) CPULength() int {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
@@ -155,7 +155,7 @@ func SystemAddSwapTotal(builder *flatbuffers.Builder, SwapTotal uint64) { builde
 func SystemAddNetDev(builder *flatbuffers.Builder, NetDev flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(10, flatbuffers.UOffsetT(NetDev), 0) }
 func SystemStartNetDevVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT { return builder.StartVector(4, numElems, 4)
 }
-func SystemAddSocket(builder *flatbuffers.Builder, Socket flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(11, flatbuffers.UOffsetT(Socket), 0) }
-func SystemStartSocketVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT { return builder.StartVector(4, numElems, 4)
+func SystemAddCPU(builder *flatbuffers.Builder, CPU flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(11, flatbuffers.UOffsetT(CPU), 0) }
+func SystemStartCPUVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT { return builder.StartVector(4, numElems, 4)
 }
 func SystemEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT { return builder.EndObject() }
