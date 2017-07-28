@@ -21,6 +21,33 @@ func (e Error) Error() string {
 }
 
 func (s *System) Get() error {
+	err := s.version()
+	if err != nil {
+		return err
+	}
+	err = s.os()
+	if err != nil {
+		return err
+	}
+	err = s.memory()
+	if err != nil {
+		return err
+	}
+
+	err = s.netdev()
+	if err != nil {
+		return err
+	}
+
+	err = s.processors()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *System) version() error {
 	//Get Kernel info
 	k, err := version.Get()
 	if err != nil {
@@ -31,6 +58,10 @@ func (s *System) Get() error {
 	s.KernelArch = k.Arch
 	s.KernelType = k.Type
 	s.KernelCompileDate = k.CompileDate
+	return nil
+}
+
+func (s *System) os() error {
 	// Get release info
 	o, err := os.Get()
 	if err != nil {
@@ -40,13 +71,20 @@ func (s *System) Get() error {
 	s.OSID = o.ID
 	s.OSIDLike = o.IDLike
 	s.OSVersion = o.Version
-	// Get Memory info
+	return nil
+}
+
+func (s *System) memory() error {
 	m, err := membasic.Get()
 	if err != nil {
 		return Error{Op: "mem info", Err: err}
 	}
 	s.MemTotal = m.MemTotal
 	s.SwapTotal = m.SwapTotal
+	return nil
+}
+
+func (s *System) netdev() error {
 	// Get network devices
 	inf, err := netdev.Get()
 	if err != nil {
@@ -56,6 +94,10 @@ func (s *System) Get() error {
 	for i := 0; i < len(inf.Device); i++ {
 		s.NetDev[i] = inf.Device[i].Name
 	}
+	return nil
+}
+
+func (s *System) processors() error {
 	// Get processors
 	p, err := processors.Get()
 	if err != nil {
