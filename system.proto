@@ -3,20 +3,21 @@ package protobuf;
 option go_package = "systeminfo";
 
 message System {
-	string KernelOS = 1;
-	string KernelVersion = 2;
-	string KernelArch = 3;
-	string KernelType = 4;
-	string KernelCompileDate = 5;
-	string OSName = 6;
-	string OSID = 7;
-	string OSIDLike = 8;
-	string OSVersion = 9;
-	uint64 MemTotal = 10;
-	uint64 SwapTotal = 11;
-	repeated string NetDev = 12;
-	int32 Sockets = 13;
-	repeated CPU CPU = 14;
+	string Hostname = 1;
+	string KernelOS = 2;
+	string KernelVersion = 3;
+	string KernelArch = 4;
+	string KernelType = 5;
+	string KernelCompileDate = 6;
+	string OSName = 7;
+	string OSID = 8;
+	string OSIDLike = 9;
+	string OSVersion = 10;
+	uint64 MemTotal = 11;
+	uint64 SwapTotal = 12;
+	repeated string NetDev = 13;
+	int32 Sockets = 14;
+	repeated CPU CPU = 15;
 }
 
 message CPU {

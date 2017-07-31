@@ -19,6 +19,9 @@ func TestGet(t *testing.T) {
 		return
 	}
 	u := Deserialize(b)
+	if s.Hostname != u.Hostname {
+		t.Errorf("Hostname: got %q; want %q", u.Hostname, s.Hostname)
+	}
 	if s.KernelOS != u.KernelOS {
 		t.Errorf("KernelOS: got %s; want %s", u.KernelOS, s.KernelOS)
 	}

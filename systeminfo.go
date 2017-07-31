@@ -2,12 +2,13 @@ package systeminfo
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/mohae/joefriday/cpu/cpuinfo"
 	"github.com/mohae/joefriday/mem/membasic"
 	"github.com/mohae/joefriday/net/netdev"
-	"github.com/mohae/joefriday/system/os"
+	sysos "github.com/mohae/joefriday/system/os"
 	"github.com/mohae/joefriday/system/version"
 )
 
@@ -21,14 +22,22 @@ func (e Error) Error() string {
 }
 
 func (s *System) Get() error {
-	err := s.version()
+	var err error
+	s.Hostname, err = os.Hostname()
+	if err != nil {
+		return Error{Op: "hostname", Err: err}
+	}
+
+	err = s.version()
 	if err != nil {
 		return err
 	}
+
 	err = s.os()
 	if err != nil {
 		return err
 	}
+
 	err = s.memory()
 	if err != nil {
 		return err
@@ -63,7 +72,7 @@ func (s *System) version() error {
 
 func (s *System) os() error {
 	// Get release info
-	o, err := os.Get()
+	o, err := sysos.Get()
 	if err != nil {
 		return Error{Op: "os release info", Err: err}
 	}

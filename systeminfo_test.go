@@ -11,6 +11,9 @@ func TestSystemInfoGet(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	if s.Hostname == "" {
+		t.Errorf("Hostname: was empty; expected something")
+	}
 	if s.KernelOS == "" {
 		t.Error("KernelOS: was empty, expected something")
 	}

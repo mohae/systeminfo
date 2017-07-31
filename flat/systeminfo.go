@@ -1,13 +1,14 @@
 package systeminfo
 
 import (
+	"os"
 	"sync"
 
 	fb "github.com/google/flatbuffers/go"
 	"github.com/mohae/joefriday/cpu/cpuinfo"
 	mem "github.com/mohae/joefriday/mem/membasic"
 	"github.com/mohae/joefriday/net/netdev"
-	"github.com/mohae/joefriday/system/os"
+	sysos "github.com/mohae/joefriday/system/os"
 	"github.com/mohae/joefriday/system/version"
 	sysinfo "github.com/mohae/systeminfo"
 	"github.com/mohae/systeminfo/flat/structs"
@@ -30,6 +31,11 @@ func Get() ([]byte, error) {
 // GetWBuilder get's the system info using the passed builder.  It is assumed
 // that the builder is ready to use.
 func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, sysinfo.Error{Op: "flat hostname", Err: err}
+	}
+	hostnameS := bldr.CreateString(hostname)
 	//Get Kernel info
 	k, err := version.Get()
 	if err != nil {
@@ -40,7 +46,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	arch := bldr.CreateString(k.Arch)
 	compileDate := bldr.CreateString(k.CompileDate)
 	// Get release info
-	o, err := os.Get()
+	o, err := sysos.Get()
 	if err != nil {
 		return nil, sysinfo.Error{Op: "flat OS release info", Err: err}
 	}
@@ -48,7 +54,6 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	oID := bldr.CreateString(o.ID)
 	oIDLike := bldr.CreateString(o.IDLike)
 	oVersion := bldr.CreateString(o.Version)
-
 	// Get Memory info
 	m, err := mem.Get()
 	if err != nil {
@@ -85,6 +90,7 @@ func GetWBuilder(bldr *fb.Builder) ([]byte, error) {
 	}
 	cpus := bldr.EndVector(len(uoff))
 	structs.SystemStart(bldr)
+	structs.SystemAddHostname(bldr, hostnameS)
 	structs.SystemAddKernelOS(bldr, osS)
 	structs.SystemAddKernelVersion(bldr, version)
 	structs.SystemAddKernelArch(bldr, arch)
@@ -160,6 +166,7 @@ func Deserialize(p []byte) *sysinfo.System {
 	s := structs.GetRootAsSystem(p, 0)
 	cpuF := &structs.CPU{}
 	cpu := &sysinfo.CPU{}
+	sys.Hostname = string(s.Hostname())
 	sys.KernelOS = string(s.KernelOS())
 	sys.KernelVersion = string(s.KernelVersion())
 	sys.KernelArch = string(s.KernelArch())

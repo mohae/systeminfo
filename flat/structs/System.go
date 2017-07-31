@@ -21,7 +21,7 @@ func (rcv *System) Init(buf []byte, i flatbuffers.UOffsetT) {
 	rcv._tab.Pos = i
 }
 
-func (rcv *System) KernelOS() []byte {
+func (rcv *System) Hostname() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -29,7 +29,7 @@ func (rcv *System) KernelOS() []byte {
 	return nil
 }
 
-func (rcv *System) KernelVersion() []byte {
+func (rcv *System) KernelOS() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -37,7 +37,7 @@ func (rcv *System) KernelVersion() []byte {
 	return nil
 }
 
-func (rcv *System) KernelArch() []byte {
+func (rcv *System) KernelVersion() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -45,7 +45,7 @@ func (rcv *System) KernelArch() []byte {
 	return nil
 }
 
-func (rcv *System) KernelCompileDate() []byte {
+func (rcv *System) KernelArch() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -53,7 +53,7 @@ func (rcv *System) KernelCompileDate() []byte {
 	return nil
 }
 
-func (rcv *System) OSName() []byte {
+func (rcv *System) KernelCompileDate() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -61,7 +61,7 @@ func (rcv *System) OSName() []byte {
 	return nil
 }
 
-func (rcv *System) OSID() []byte {
+func (rcv *System) OSName() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -69,7 +69,7 @@ func (rcv *System) OSID() []byte {
 	return nil
 }
 
-func (rcv *System) OSIDLike() []byte {
+func (rcv *System) OSID() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -77,7 +77,7 @@ func (rcv *System) OSIDLike() []byte {
 	return nil
 }
 
-func (rcv *System) OSVersion() []byte {
+func (rcv *System) OSIDLike() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -85,15 +85,15 @@ func (rcv *System) OSVersion() []byte {
 	return nil
 }
 
-func (rcv *System) MemTotal() uint64 {
+func (rcv *System) OSVersion() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
 	if o != 0 {
-		return rcv._tab.GetUint64(o + rcv._tab.Pos)
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
 	}
-	return 0
+	return nil
 }
 
-func (rcv *System) SwapTotal() uint64 {
+func (rcv *System) MemTotal() uint64 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
 	if o != 0 {
 		return rcv._tab.GetUint64(o + rcv._tab.Pos)
@@ -101,8 +101,16 @@ func (rcv *System) SwapTotal() uint64 {
 	return 0
 }
 
-func (rcv *System) NetDev(j int) []byte {
+func (rcv *System) SwapTotal() uint64 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(24))
+	if o != 0 {
+		return rcv._tab.GetUint64(o + rcv._tab.Pos)
+	}
+	return 0
+}
+
+func (rcv *System) NetDev(j int) []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
 	if o != 0 {
 		a := rcv._tab.Vector(o)
 		return rcv._tab.ByteVector(a + flatbuffers.UOffsetT(j * 4))
@@ -111,7 +119,7 @@ func (rcv *System) NetDev(j int) []byte {
 }
 
 func (rcv *System) NetDevLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(24))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -119,7 +127,7 @@ func (rcv *System) NetDevLength() int {
 }
 
 func (rcv *System) Sockets() int32 {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(28))
 	if o != 0 {
 		return rcv._tab.GetInt32(o + rcv._tab.Pos)
 	}
@@ -127,7 +135,7 @@ func (rcv *System) Sockets() int32 {
 }
 
 func (rcv *System) CPU(obj *CPU, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(28))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(30))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 4
@@ -142,29 +150,30 @@ func (rcv *System) CPU(obj *CPU, j int) bool {
 }
 
 func (rcv *System) CPULength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(28))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(30))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
 	return 0
 }
 
-func SystemStart(builder *flatbuffers.Builder) { builder.StartObject(13) }
-func SystemAddKernelOS(builder *flatbuffers.Builder, KernelOS flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(KernelOS), 0) }
-func SystemAddKernelVersion(builder *flatbuffers.Builder, KernelVersion flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(KernelVersion), 0) }
-func SystemAddKernelArch(builder *flatbuffers.Builder, KernelArch flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(KernelArch), 0) }
-func SystemAddKernelCompileDate(builder *flatbuffers.Builder, KernelCompileDate flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(KernelCompileDate), 0) }
-func SystemAddOSName(builder *flatbuffers.Builder, OSName flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(OSName), 0) }
-func SystemAddOSID(builder *flatbuffers.Builder, OSID flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(OSID), 0) }
-func SystemAddOSIDLike(builder *flatbuffers.Builder, OSIDLike flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(OSIDLike), 0) }
-func SystemAddOSVersion(builder *flatbuffers.Builder, OSVersion flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(7, flatbuffers.UOffsetT(OSVersion), 0) }
-func SystemAddMemTotal(builder *flatbuffers.Builder, MemTotal uint64) { builder.PrependUint64Slot(8, MemTotal, 0) }
-func SystemAddSwapTotal(builder *flatbuffers.Builder, SwapTotal uint64) { builder.PrependUint64Slot(9, SwapTotal, 0) }
-func SystemAddNetDev(builder *flatbuffers.Builder, NetDev flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(10, flatbuffers.UOffsetT(NetDev), 0) }
+func SystemStart(builder *flatbuffers.Builder) { builder.StartObject(14) }
+func SystemAddHostname(builder *flatbuffers.Builder, Hostname flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(Hostname), 0) }
+func SystemAddKernelOS(builder *flatbuffers.Builder, KernelOS flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(KernelOS), 0) }
+func SystemAddKernelVersion(builder *flatbuffers.Builder, KernelVersion flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(KernelVersion), 0) }
+func SystemAddKernelArch(builder *flatbuffers.Builder, KernelArch flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(KernelArch), 0) }
+func SystemAddKernelCompileDate(builder *flatbuffers.Builder, KernelCompileDate flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(KernelCompileDate), 0) }
+func SystemAddOSName(builder *flatbuffers.Builder, OSName flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(OSName), 0) }
+func SystemAddOSID(builder *flatbuffers.Builder, OSID flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(OSID), 0) }
+func SystemAddOSIDLike(builder *flatbuffers.Builder, OSIDLike flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(7, flatbuffers.UOffsetT(OSIDLike), 0) }
+func SystemAddOSVersion(builder *flatbuffers.Builder, OSVersion flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(OSVersion), 0) }
+func SystemAddMemTotal(builder *flatbuffers.Builder, MemTotal uint64) { builder.PrependUint64Slot(9, MemTotal, 0) }
+func SystemAddSwapTotal(builder *flatbuffers.Builder, SwapTotal uint64) { builder.PrependUint64Slot(10, SwapTotal, 0) }
+func SystemAddNetDev(builder *flatbuffers.Builder, NetDev flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(11, flatbuffers.UOffsetT(NetDev), 0) }
 func SystemStartNetDevVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT { return builder.StartVector(4, numElems, 4)
 }
-func SystemAddSockets(builder *flatbuffers.Builder, Sockets int32) { builder.PrependInt32Slot(11, Sockets, 0) }
-func SystemAddCPU(builder *flatbuffers.Builder, CPU flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(12, flatbuffers.UOffsetT(CPU), 0) }
+func SystemAddSockets(builder *flatbuffers.Builder, Sockets int32) { builder.PrependInt32Slot(12, Sockets, 0) }
+func SystemAddCPU(builder *flatbuffers.Builder, CPU flatbuffers.UOffsetT) { builder.PrependUOffsetTSlot(13, flatbuffers.UOffsetT(CPU), 0) }
 func SystemStartCPUVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT { return builder.StartVector(4, numElems, 4)
 }
 func SystemEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT { return builder.EndObject() }

@@ -2,6 +2,7 @@
 namespace structs;
 
 table System {
+	Hostname:string;
 	KernelOS:string;
 	KernelVersion:string;
 	KernelArch:string;
